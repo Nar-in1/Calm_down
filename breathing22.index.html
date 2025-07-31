@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Calming Breathing Exercise</title>
+  <style>
+    #bgVideo {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: cover;
+      z-index: -1;
+      filter: brightness(0.7);
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+      user-select: none;
+      background: #000;
+    }
+
+    .content {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 30px 50px;
+      border-radius: 12px;
+      max-width: 400px;
+      width: 90%;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      text-shadow: 0 0 8px rgba(0,0,0,0.7);
+    }
+
+    #phase {
+      font-size: 3rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-shadow: 0 0 6px rgba(0,0,0,0.8);
+    }
+
+    #count {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      text-shadow: 0 0 6px rgba(0,0,0,0.8);
+    }
+
+    #cycles {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      text-shadow: 0 0 6px rgba(0,0,0,0.8);
+    }
+
+    #startBtn {
+      font-size: 1.2rem;
+      padding: 10px 20px;
+      background-color: #028090;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      transition: background-color 0.3s ease;
+    }
+    #startBtn:hover {
+      background-color: #05668d;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background nature video -->
+  <video id="bgVideo" autoplay muted loop playsinline>
+    <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm" type="video/webm" />
+    Sorry, your browser does not support the video tag.
+  </video>
+
+  <div class="content">
+    <h1>Calming Breathing Exercise</h1>
+    <div id="phase">Ready?</div>
+    <div id="count"></div>
+    <div id="cycles"></div>
+
+    <button id="startBtn">Start Exercise</button>
+  </div>
+
+  <!-- Background calming music -->
+  <audio id="bgMusic" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2021/09/22/audio_1d5f678f17.mp3?filename=peaceful-nature-ambient-10852.mp3" type="audio/mp3" />
+    Your browser does not support the audio element.
+  </audio>
+
+  <script>
+    const sequence = [
+      { name: "Inhale", duration: 4 },
+      { name: "Hold", duration: 2 },
+      { name: "Exhale", duration: 8 },
+      { name: "Hold", duration: 2 },
+    ];
+
+    const totalCycles = 13;
+    let index = 0;
+    let timeLeft = 0;
+    let cycleCount = 0;
+    let timer;
+
+    const phaseEl = document.getElementById("phase");
+    const countEl = document.getElementById("count");
+    const cyclesEl = document.getElementById("cycles");
+    const startBtn = document.getElementById("startBtn");
+    const bgMusic = document.getElementById("bgMusic");
+
+    function updateUI() {
+      phaseEl.textContent = sequence[index].name;
+      countEl.textContent = timeLeft;
+      cyclesEl.textContent = `Cycle: ${cycleCount} / ${totalCycles}`;
+    }
+
+    function nextPhase() {
+      index = (index + 1) % sequence.length;
+      if (index === 0) {
+        cycleCount++;
+        if (cycleCount > totalCycles) {
+          clearInterval(timer);
+          phaseEl.textContent = "Exercise Complete! 🌿";
+          countEl.textContent = "";
+          cyclesEl.textContent = "";
+          startBtn.disabled = false;
+          startBtn.textContent = "Restart Exercise";
+          bgMusic.pause();
+          return;
+        }
+      }
+      timeLeft = sequence[index].duration;
+      updateUI();
+    }
+
+    function tick() {
+      if (timeLeft > 0) {
+        countEl.textContent = timeLeft;
+        timeLeft--;
+      } else {
+        nextPhase();
+      }
+    }
+
+    function startExercise() {
+      startBtn.disabled = true;
+      cycleCount = 1;
+      index = 0;
+      timeLeft = sequence[index].duration;
+      updateUI();
+      bgMusic.play();
+      timer = setInterval(tick, 1000);
+    }
+
+    startBtn.addEventListener("click", () => {
+      startExercise();
+    });
+  </script>
+
+</body>
+</html>
